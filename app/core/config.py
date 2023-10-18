@@ -1,5 +1,5 @@
 config = {
-    'PROJECT_NAME': "GameLitics",
+    'PROJECT_NAME': "Leaderboard",
 
     'BACKEND_CORS_ORIGINS': [
         "http://localhost:3000",
@@ -7,5 +7,5 @@ config = {
     ],
     'host': '',
     'port': 8080,
-    "SQLALCHEMY_DATABASE_URL" : "sqlite:///./game_litics.db"
+    "SQLALCHEMY_DATABASE_URL" : "sqlite:///./leaderboard.db"
 }

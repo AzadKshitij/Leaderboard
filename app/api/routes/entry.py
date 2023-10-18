@@ -9,44 +9,44 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy import and_
 from sqlalchemy.orm import Session
-from app.models.event import Event
+from app.models.entry import Entry
 from app.api import deps
-from app.schemas.event import EventCreate, EventBase
-from app.templates.template import templates
+from app.schemas.entry import EntryCreate, EntryBase
+# from app.templates.template import templates
 
 import datetime 
 
 router = APIRouter()
 
 # @router.get("/")
-@router.get("/", response_class=HTMLResponse)
-async def read_events(request: Request, db: Session = Depends(deps.get_db), ):
-    # all events
-    # filtered_events =  db.query(Event).all()
-    # count according to owner_id
-    # filtered_events =  db.query(Event).filter(Event.owner_id == 1).count()
-    filtered_events =  db.query(Event).filter(
-        Event.eventDate <= datetime.datetime.utcnow()).filter(
-        Event.eventDate >= datetime.datetime.utcnow() - datetime.timedelta(days=7)
-        ).all()
-    logger.warning(jsonable_encoder(filtered_events))
-    return templates.TemplateResponse("event.jinja-html",
-                                      { "request": request,
-                                        "events": jsonable_encoder(filtered_events),
-                                        "name": "Event"})
-    # return jsonable_encoder(filtered_events)
+# @router.get("/", response_class=HTMLResponse)
+# async def read_Entrys(request: Request, db: Session = Depends(deps.get_db), ):
+#     # all Entrys
+#     # filtered_Entrys =  db.query(Entry).all()
+#     # count according to owner_id
+#     # filtered_Entrys =  db.query(Entry).filter(Entry.owner_id == 1).count()
+#     filtered_Entrys =  db.query(Entry).filter(
+#         Entry.EntryDate <= datetime.datetime.utcnow()).filter(
+#         Entry.EntryDate >= datetime.datetime.utcnow() - datetime.timedelta(days=7)
+#         ).all()
+#     logger.warning(jsonable_encoder(filtered_Entrys))
+#     return templates.TemplateResponse("Entry.jinja-html",
+#                                       { "request": request,
+#                                         "Entrys": jsonable_encoder(filtered_Entrys),
+#                                         "name": "Entry"})
+    # return jsonable_encoder(filtered_Entrys)
 
 @router.get("/{owner_id}")
-async def read_owner_events(
+async def read_owner_Entrys(
     owner_id: int,
     db: Session = Depends(deps.get_db),
 ) -> Any:
     """
     Retrieve items.
     """
-    # db.query(Event).filter(Event.owner_id == owner_id).all()
-    # return db.query(Event).filter(Event.owner_id == owner_id).all()
-    return jsonable_encoder(db.query(Event).filter(Event.owner_id == owner_id).all())
+    # db.query(Entry).filter(Entry.owner_id == owner_id).all()
+    # return db.query(Entry).filter(Entry.owner_id == owner_id).all()
+    return jsonable_encoder(db.query(Entry).filter(Entry.owner_id == owner_id).all())
     # return False
 
 
@@ -54,20 +54,20 @@ async def read_owner_events(
 @router.post("/{owner_id}")
 async def create_item(
     owner_id: int,
-    obj_in: EventCreate,
+    obj_in: EntryCreate,
     db: Session = Depends(deps.get_db),
 ) -> Any:
     """
     Create new item.
     """
-    logger.info("Creating event")
+    logger.info("Creating Entry")
     logger.info(owner_id)
     logger.info(type(obj_in))
     obj_in_data = jsonable_encoder(obj_in)
-    db_obj = Event(**obj_in_data, owner_id=owner_id)
+    db_obj = Entry(**obj_in_data, owner_id=owner_id)
     logger.info(db_obj)
     try:
-        logger.info("Creating event")
+        logger.info("Try Creating Entry")
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
@@ -89,7 +89,7 @@ async def update_item(
     Update an item.
     """
     obj_in_data = jsonable_encoder(obj_in)
-    db_obj = db.query(Event).filter(Event.owner_id == owner_id).filter(Event.id == id).first()
+    db_obj = db.query(Entry).filter(Entry.owner_id == owner_id).filter(Entry.id == id).first()
     if not db_obj:
         raise HTTPException(status_code=404, detail="Item not found")
     update_data = obj_in_data
@@ -111,7 +111,7 @@ async def delete_item(
     """
     Delete an item.
     """
-    db_obj = db.query(Event).filter(Event.owner_id == owner_id).filter(Event.id == id).first()
+    db_obj = db.query(Entry).filter(Entry.owner_id == owner_id).filter(Entry.id == id).first()
     if not db_obj:
         raise HTTPException(status_code=404, detail="Item not found")
     db.delete(db_obj)
