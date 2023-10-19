@@ -4,6 +4,7 @@ from hypercorn.config import Config
 from hypercorn.asyncio import serve
 from tenacity import after_log, before_log, retry, stop_after_attempt, wait_fixed
 import logging
+import uvicorn
 
 from app.main import app
 from app.db.init_db import init_db
@@ -39,10 +40,10 @@ def init() -> None:
 
 def start_app() -> None:
     logger.info("Starting app")
-    # uvicorn.run("app", host="127.0.0.1", port=8000, log_level="info",  reload=True)
+    # uvicorn.run("app:main:app", host="127.0.0.1", port=8000, log_level="info",  reload=True)
 
-    # asyncio.run(serve(app,Config().from_mapping(debug_config)))
-    asyncio.run(serve(app,Config()))
+    asyncio.run(serve(app,Config().from_mapping(debug_config)))
+    # asyncio.run(serve(app,Config()))
     
 
 if __name__ == "__main__":

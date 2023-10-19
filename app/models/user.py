@@ -5,5 +5,5 @@ from app.db.base_class import Base
 
 class User(Base):
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    name = Column(String, index=True, unique=True)
+    name = Column(String, index=True)
     entry = relationship("Entry", back_populates="user")
