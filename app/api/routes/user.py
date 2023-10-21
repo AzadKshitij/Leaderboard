@@ -18,7 +18,7 @@ router = APIRouter()
 
 
 
-@router.get("/{user_id}")
+@router.get("/get/{user_id}")
 def read_item(
     user_id: int,
     db: Session = Depends(deps.get_db),

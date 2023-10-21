@@ -42,8 +42,8 @@ def start_app() -> None:
     logger.info("Starting app")
     # uvicorn.run("app:main:app", host="127.0.0.1", port=8000, log_level="info",  reload=True)
 
-    asyncio.run(serve(app,Config().from_mapping(debug_config)))
-    # asyncio.run(serve(app,Config()))
+    # asyncio.run(serve(app,Config().from_mapping(debug_config)))
+    asyncio.run(serve(app,Config()))
     
 
 if __name__ == "__main__":
