@@ -5,22 +5,22 @@ from datetime import datetime
 
 # Shared properties
 class EntryBase(BaseModel):
-    data: float
+    data: str
 
 # Properties to receive on entry creation
 class EntryCreate(EntryBase):
-    data: float
+    data: str
 
 
 # Properties to receive on entry update
 class EntryUpdate(EntryBase):
-    data: float
+    data: str
 
 
 # Properties shared by models stored in DB
 class EntryInDBBase(EntryBase):
     id: int
-    data: float
+    data: str
     user_id: int
 
     class Config:

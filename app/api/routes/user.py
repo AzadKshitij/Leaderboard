@@ -28,7 +28,7 @@ def read_item(
     """
     try:
         user_info = db.query(User).filter(
-            User.id == user_id).all()
+            User.id == user_id).first()
     except Exception as e:
         logger.error(msg= "User not found " + str(e))
         raise HTTPException(status_code=404, detail="User not found")

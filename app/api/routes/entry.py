@@ -46,7 +46,7 @@ async def read_owner_Entries(
     Retrieve entries by user.
     """
     try:
-        return jsonable_encoder(db.query(User).filter(User.id == user_id).options(joinedload(User.entry)).all())
+        return jsonable_encoder(db.query(User).filter(User.id == user_id).options(joinedload(User.entry)).first())
     except Exception as e:
         logger.error(msg= "User not found " + str(e))
         raise HTTPException(status_code=404, detail="User not found")
@@ -61,7 +61,14 @@ async def read_by_id(
     Retrieve entry by id.
     """
     try:
-        return jsonable_encoder(db.query(Entry).filter(Entry.id == entry_id).all())
+        entry = jsonable_encoder(db.query(Entry).filter(Entry.id == entry_id).first())
+        data = json.loads(entry['data'])
+        logger.info(f"entry {entry}")
+        date = entry['date_updated']
+        return {
+            "data": data,
+            "date": date
+        }
     except Exception as e:
         logger.error(msg= "Entry not found " + str(e))
         raise HTTPException(status_code=404, detail="Entry not found")
@@ -71,16 +78,17 @@ async def read_by_id(
 @router.post("/create/{user_id}")
 async def create_item(
     user_id: int,
-    obj_in: EntryCreate,
+    obj_in,
     db: Session = Depends(deps.get_db),
 ) -> Any:
     """
     Create new item.
     """
+    logger.info(f"'obj_in '{obj_in}")
     user = db.query(User).filter(User.id == user_id).first()
-    obj_in_data = jsonable_encoder(obj_in)
+    data = json.dumps(obj_in)
     try:
-        db_obj = Entry(**obj_in_data, user = user)
+        db_obj = Entry(data = data, user = user)
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
@@ -89,6 +97,7 @@ async def create_item(
         logger.error(e)
         raise e
     return jsonable_encoder(db_obj)
+    # return obj_in
 
 
 
@@ -120,14 +129,14 @@ async def update_item(
 
 @router.delete("/{id}")
 async def delete_item(
-    owner_id: int,
+    user_id: int,
     id: int,
     db: Session = Depends(deps.get_db),
 ) -> Any:
     """
     Delete an item.
     """
-    db_obj = db.query(Entry).filter(Entry.owner_id == owner_id).filter(Entry.id == id).first()
+    db_obj = db.query(Entry).filter(Entry.user_id == user_id).filter(Entry.id == id).first()
     if not db_obj:
         raise HTTPException(status_code=404, detail="Item not found")
     db.delete(db_obj)
